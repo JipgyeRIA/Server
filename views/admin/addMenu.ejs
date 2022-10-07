@@ -1,0 +1,51 @@
+<% layout('boilerplate') -%>
+
+<div class="container">
+  <h2 class="mt-5">★ 메뉴 추가 ★</h2>
+  <form action="/admin/item" method="POST">
+    <label for="name">이름: </label>
+    <input type="text" name="name" id="name" /><br />
+
+    <label for="price">가격: </label>
+    <input type="number" name="price" id="price" /><br />
+
+    <label for="composed">구성: </label>
+    <input type="text" name="composed" id="composed" /><br />
+
+    <label for="servings">인분: </label>
+    <input type="number" name="servings" id="servings" /><br />
+
+    <label for="img">이미지주소: </label>
+    <input type="text" name="img" id="img" /><br />
+
+    <label>카테고리 추가</label>
+    <button class="addCategory mt-1">추가</button>
+    <div class="category-class">
+      <input type="text" name="category[0]" />
+    </div>
+    <br />
+
+    <label for="preferredAge">선호 연령</label>
+    <input type="number" name="preferredAge" id="preferredAge" /><br />
+
+    <label for="preferredGender">선호 성별</label>
+    <input type="text" name="preferredGender" id="preferredGender" /><br />
+
+    <button type="submit">메뉴 추가하기</button>
+  </form>
+</div>
+<script>
+  const addCategoryButton = document.querySelector(".addCategory");
+  const categoryClass = document.querySelector(".category-class");
+  const brTag = document.createElement("br");
+  let count = 1;
+  addCategoryButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    const newCategoryInput = document.createElement("input");
+    newCategoryInput.type = "text";
+    newCategoryInput.name = `category[${count}]`;
+    count++;
+    categoryClass.appendChild(newCategoryInput);
+    categoryClass.appendChild(brTag);
+  });
+</script>

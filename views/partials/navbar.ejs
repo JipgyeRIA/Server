@@ -1,0 +1,41 @@
+<div class="container">
+  <ul class="nav nav-pills nav-justified">
+    <li class="nav-item mt-5">
+      <a
+        class="nav-link <%- path.split('/')[1] == 'home' ? 'active' : '' %>"
+        aria-current="page"
+        href="/order/home"
+        >홈</a
+      >
+    </li>
+    <li class="nav-item mt-5">
+      <a
+        class="nav-link <%- path.split('/')[1] == 'recommend' ? 'active' : '' %>"
+        aria-current="page"
+        href="/order/recommend"
+        >추천 메뉴</a
+      >
+    </li>
+    <li class="nav-item mt-5">
+      <a
+        class="nav-link <%- path.split('/')[1] == 'set-menu' ? 'active' : '' %>"
+        href="/order/set-menu"
+        >세트 메뉴</a
+      >
+    </li>
+    <li class="nav-item mt-5">
+      <a
+        class="nav-link <%- path.split('/')[1] == 'single-item' ? 'active' : '' %>"
+        href="/order/single-item"
+        >단품</a
+      >
+    </li>
+    <li class="nav-item mt-5">
+      <a
+        class="nav-link <%- path.split('/')[1] == 'side-dish' ? 'active' : '' %>"
+        href="/order/side-dish"
+        >사이드, 음료</a
+      >
+    </li>
+  </ul>
+</div>
