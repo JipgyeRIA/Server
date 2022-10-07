@@ -1,0 +1,21 @@
+메뉴
+
+- name: 메뉴 이름(ex - "행복가득팩")
+- price: 가격(ex - 24000)
+- composed: 구성(ex - "블랙라벨치킨8조각+콜라M2")
+- servings: 인분(ex - 3)
+- img: 이미지주소(url, 혹은 파일이면 파일 이름) => 파일 이름 직접 정리해서 주면 좋음 (chicken-burger.png 요런식으로)
+- category: ["set-menu", "single-menu", "side-menu", "beverage", "recommend", ...] ->
+  -> set-menu: 세트, single-menu: 단품, side-menu: 사이드(애피타이져 등), beverage: 음료, recommend: 직접 추천하기위한 용도,
+  -> keyword 다른 것들도 넣어도 됨(넣고 이게 어떤 추천 용도로 사용되는지 알려주면 됨)
+- preferredAge: 선호 연령대 
+  -> 0: 0~10 대의 어린이
+  -> 1: 10~19 대의 학생
+  -> 2: 20~39 대의 청년
+  -> 3: 40~59 대의 중년
+  -> 4: 60+ 대의 노년
+  -> 모두 포함된다면 [0, 1, 2, 3, 4] 이렇게
+- preferredAge: 선호 성별
+  -> 0: 남자
+  -> 1: 여자
+  -> 2: 모두

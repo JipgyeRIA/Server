@@ -31,7 +31,6 @@ app.use(express.urlencoded({ extended: false }));
 
 /** DB Connect */
 mongoose.connect(MONGO_URI, () => {
-  console.log(MONGO_URI);
   console.log("database connected");
 });
 
