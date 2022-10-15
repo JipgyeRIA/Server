@@ -1,8 +1,9 @@
 const Customer = require("../models/customer");
 
 module.exports.saveGroup = async (res, req, next) => {
+  console.log(req.body["group"]);
   try {
-    for (let customer in req.body[group]) {
+    for (let customer in req.body["group"]) {
       const customer = new Customer(customer);
       await customer.save();
     }
