@@ -6,8 +6,8 @@ const customerSchema = new Schema(
     customerId: Schema.Types.ObjectId,
     group: String,
     emb: String,
-    age: int,
-    gender: int,
+    age: Number,
+    gender: Number,
   },
   {
     timestamps: true,
