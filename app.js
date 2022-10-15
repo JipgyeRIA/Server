@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const path = require("path");
 const methodOverride = require("method-override");
+const cors = require("cors");
 
 /** Environmental Variable */
 const PORT = process.env.PORT ?? 3000;
@@ -20,10 +21,12 @@ const adminRouter = require("./routers/admin.router");
 
 /** Set View Engine */
 app.engine("ejs", ejsMate);
+app.use(cors());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 /** Static Files Setting */
+
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
