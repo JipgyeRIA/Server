@@ -1,11 +1,10 @@
 const Customer = require("../models/customer");
 
-module.exports.saveGroup = async (res, req, next) => {
-  console.log(req.body["group"]);
+module.exports.saveGroup = async (req, res, next) => {
   try {
     for (let customer in req.body["group"]) {
-      const customer = new Customer(customer);
-      await customer.save();
+      const newCustomer = new Customer(req.body["group"][customer]);
+      await newCustomer.save();
     }
 
     res.set({
@@ -16,6 +15,7 @@ module.exports.saveGroup = async (res, req, next) => {
       success: true,
     });
   } catch (e) {
+    console.log(e.message);
     res.set({
       "content-type": "application/json",
       charset: "utf-8",
