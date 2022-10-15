@@ -18,6 +18,7 @@ const MONGO_URI =
 /** Import Router */
 const orderRouter = require("./routers/order.router");
 const adminRouter = require("./routers/admin.router");
+const faceRouter = require("./routers/face.router");
 
 /** Set View Engine */
 app.engine("ejs", ejsMate);
@@ -40,6 +41,7 @@ mongoose.connect(MONGO_URI, () => {
 /** Handler: Router Setting */
 app.use("/order", orderRouter);
 app.use("/admin", adminRouter);
+app.use("/face", faceRouter);
 
 /** Server */
 app.listen(PORT, () => {

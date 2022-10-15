@@ -4,8 +4,8 @@ const { Schema } = mongoose;
 const customerSchema = new Schema(
   {
     customerId: Schema.Types.ObjectId,
-    groupNum: int,
-    img_vector: String,
+    group: String,
+    emb: String,
     age: int,
     gender: int,
   },
