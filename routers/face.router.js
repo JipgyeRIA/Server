@@ -4,3 +4,5 @@ const faceController = require("../controllers/face.controller");
 
 /** __/face/-> */
 router.route("/group").post(faceController.saveGroup);
+
+module.exports = router;
