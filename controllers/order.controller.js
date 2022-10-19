@@ -1,4 +1,5 @@
 const Item = require("../models/item");
+const Customer = require("../models/customer");
 
 /** 주문 홈 */
 module.exports.renderingOrderHome = async (req, res, next) => {
@@ -80,3 +81,55 @@ module.exports.renderingMenu = async (req, res, next) => {
   const path = req.path;
   res.render("order/menu", { menu, path });
 };
+
+/** 그룹 판단 후 메뉴 추천 */
+module.exports.recommendGroupMenu = async (req, res, next) => {
+  const customers = await Customer.find();
+  const { emb } = req.body;
+
+  let minNormVal = 1;
+  let group = -1;
+
+  for (let customer of customers) {
+    const customerEmbeddingVector = strToEmbedding(customer.emb);
+    const embeddingVector = strToEmbedding(emb);
+
+    let normVal = l2Norm(customerEmbeddingVector, embeddingVector);
+    // console.log(normVal);
+    if (normVal < minNormVal) {
+      minNormVal = normVal;
+      group = customer.group;
+    }
+  }
+
+  if (group == -1) {
+    // TODO: 들어온 고객 없음. => 개인 추천 각
+  }
+
+  const customerGroup = customers.filter(customer => customer.group == group);
+  // TODO: 추천 메뉴 로직.
+
+  res.redirect("/order/home");
+};
+
+function strToEmbedding(faceStr, precision = 4, embedding_size = 128) {
+  const faceEmbedding = [];
+  for (let i = 0; i < embedding_size; i++) {
+    val = faceStr.substring(i * (precision + 1), (i + 1) * (precision + 1));
+    val = val[0] + "." + val.substring(1);
+    val = Number(val);
+    faceEmbedding.push(val);
+  }
+
+  return faceEmbedding;
+}
+
+function l2Norm(x, y) {
+  let normVal = 0;
+  x.forEach((val, i) => {
+    normVal += (val - y[i]) ** 2;
+  });
+
+  console.log(normVal);
+  return Math.sqrt(normVal);
+}
