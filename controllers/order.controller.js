@@ -1,5 +1,6 @@
 const Item = require("../models/item");
 const Customer = require("../models/customer");
+const mongoose = require("mongoose");
 
 /** 주문 홈 */
 module.exports.renderingOrderHome = async (req, res, next) => {
@@ -74,12 +75,21 @@ module.exports.renderingSideMenu = async (req, res, next) => {
   res.json({ recMenus, path });
 };
 
-/** 특정 메뉴 주문페이지 */
-module.exports.renderingMenu = async (req, res, next) => {
-  const { id } = req.param;
-  const menu = await Item.findById(id);
-  const path = req.path;
-  res.render("order/menu", { menu, path });
+module.exports.getMenuDetail = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const item = await Item.findById(id);
+    const path = req.path;
+
+    res.set({
+      "content-type": "application/json",
+      charset: "utf-8",
+    });
+
+    res.json({ item, path });
+  } catch (e) {
+    console.log(e.message);
+  }
 };
 
 /** 그룹 판단 후 메뉴 추천 */
@@ -106,8 +116,17 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
     // TODO: 들어온 고객 없음. => 개인 추천 각
   }
 
+  console.log(group);
   const customerGroup = customers.filter(customer => customer.group == group);
   // TODO: 추천 메뉴 로직.
+
+  const age = 0;
+  const men = 0;
+  const women = 0;
+
+  // customers.forEach(customer => {
+  //   age += customer.ag
+  // })
 
   res.redirect("/order/home");
 };
