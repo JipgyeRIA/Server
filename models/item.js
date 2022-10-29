@@ -11,8 +11,8 @@ const itemSchema = new Schema(
     category: [String],
     img: String,
     preferredAge: { type: Number, default: 0 },
-    preferredGender: { type: String, default: "ALL" },
-    orderCount: Number,
+    preferredGender: Number,
+    orderCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,
