@@ -10,6 +10,7 @@ const cors = require("cors");
 
 /** Environmental Variable */
 const PORT = process.env.PORT ?? 3000;
+// const MONGO_URI = "mongodb://localhost:27017/JipgyeRIA";
 const MONGO_URI =
   process.env.npm_command == "test"
     ? "mongodb://localhost:27017/JipgyeRIA"

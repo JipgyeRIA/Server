@@ -10,8 +10,8 @@ const itemSchema = new Schema(
     servings: Number,
     category: [String],
     img: String,
-    preferredAge: { type: Number, default: 0 },
-    preferredGender: Number,
+    preferredAge: { type: [Number], default: 0 },
+    preferredGender: [Number],
     orderCount: { type: Number, default: 0 },
   },
   {
