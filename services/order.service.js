@@ -7,9 +7,11 @@ module.exports.recommendMenu = async (
   women = 0,
   ages = [1]
 ) => {
+  console.log(
+    `population: ${population}, men: ${men}, women: ${women}, age: ${ages}`
+  );
   if (population == 1) {
     console.log("single recommend");
-    console.log(men, women);
     return await Item.find({
       gender: men > women ? 0 : 1,
       preferredAge: { $in: ages },

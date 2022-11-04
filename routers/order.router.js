@@ -9,7 +9,7 @@ router.route("/recommend/set-menu").get(orderController.renderingSetMenu);
 router.route("/recommend/single-menu").get(orderController.renderingSingleMenu);
 router.route("/recommend/side-menu").get(orderController.renderingSideMenu);
 
-router.route("/recommend/single").get(orderController.recommendSingleMenu);
+router.route("/recommend/single").post(orderController.recommendSingleMenu);
 router.route("/recommend/group").post(orderController.recommendGroupMenu);
 router.route("/item/:id").get(orderController.getMenuDetail);
 

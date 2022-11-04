@@ -95,11 +95,20 @@ module.exports.getMenuDetail = async (req, res, next) => {
 
 /** 개인 얼굴 분석 후 메뉴 추천 */
 module.exports.recommendSingleMenu = async (req, res, next) => {
-  const population = 1;
-  const men = 1;
-  const women = 0;
-  const ages = [1];
+  const singleInfo = req.body["single_info"];
+
+  const { population, ages } = singleInfo;
+  let men = 0;
+  let women = 0;
   const path = req.path;
+
+  singleInfo["gender"].forEach(g => {
+    if (g == 0) {
+      men++;
+    } else if (g == 1) {
+      women++;
+    }
+  });
 
   const recMenus = await orderService.recommendMenu(
     population,
@@ -117,7 +126,7 @@ module.exports.recommendSingleMenu = async (req, res, next) => {
 
 /** 그룹 판단 후 메뉴 추천 */
 module.exports.recommendGroupMenu = async (req, res, next) => {
-  const customers = await Customer.find();
+  const customers = await Customer.find().sort({ createdAt: -1 });
   const { emb } = req.body;
   const path = req.path;
 
@@ -129,6 +138,10 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
     const embeddingVector = strToEmbedding(emb);
 
     let normVal = l2Norm(customerEmbeddingVector, embeddingVector);
+    if (normVal > 0.3) {
+      continue;
+    }
+
     if (normVal < minNormVal) {
       minNormVal = normVal;
       group = customer.group;
@@ -136,41 +149,45 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
   }
 
   if (group == -1) {
-    // TODO: 들어온 고객 없음. => 개인 추천 각
+    // 일치하는 그룹이 없을 때
+    console.log("Redirecting to Recommend Single Page");
+    res.set({
+      "content-type": "application/json",
+      charset: "utf-8",
+    });
+    res.json({ result: false });
+  } else {
+    const customerGroup = customers.filter(customer => customer.group == group);
+
+    let population = 0;
+    let men = 0;
+    let women = 0;
+
+    const set = new Set();
+    customerGroup.forEach(customer => {
+      population++;
+      set.add(customer.age);
+      if (customer.gender == 0) {
+        men++;
+      } else if (customer.gender == 1) {
+        women++;
+      }
+    });
+    const ages = Array.from(set);
+
+    const recMenus = await orderService.recommendMenu(
+      population,
+      men,
+      women,
+      ages
+    );
+
+    res.set({
+      "content-type": "application/json",
+      charset: "utf-8",
+    });
+    res.json({ result: true, recMenus, path });
   }
-
-  // console.log(group);
-  const customerGroup = customers.filter(customer => customer.group == group);
-  // TODO: 추천 메뉴 로직.
-
-  let population = 0;
-  let men = 0;
-  let women = 0;
-
-  const set = new Set();
-  customers.forEach(customer => {
-    population++;
-    set.add(customer.age);
-    if (customer.gender == 0) {
-      men++;
-    } else if (customer.gender == 1) {
-      women++;
-    }
-  });
-  const ages = Array.from(set);
-
-  const recMenus = await orderService.recommendMenu(
-    population,
-    men,
-    women,
-    ages
-  );
-
-  res.set({
-    "content-type": "application/json",
-    charset: "utf-8",
-  });
-  res.json({ recMenus, path });
 };
 
 function strToEmbedding(faceStr, precision = 4, embedding_size = 128) {
@@ -190,7 +207,5 @@ function l2Norm(x, y) {
   x.forEach((val, i) => {
     normVal += (val - y[i]) ** 2;
   });
-
-  console.log(normVal);
   return Math.sqrt(normVal);
 }
