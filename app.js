@@ -7,6 +7,9 @@ const ejsMate = require("ejs-mate");
 const path = require("path");
 const methodOverride = require("method-override");
 const cors = require("cors");
+const session = require("express-session");
+// const mongoStore = require("connect-mongo");
+const cookieParser = require("cookie-parser");
 
 /** Environmental Variable */
 const PORT = process.env.PORT ?? 3000;
@@ -23,12 +26,28 @@ const faceRouter = require("./routers/face.router");
 
 /** Set View Engine */
 app.engine("ejs", ejsMate);
-app.use(cors());
+app.use(cors({ credentials: "include" }));
+app.use(cookieParser());
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-/** Static Files Setting */
+const cookieOption = {
+  maxAge: 1000000,
+  httpOnly: true,
+  secure: false,
+};
 
+app.use(
+  session({
+    secret: process.env.session_secret ?? "test_secret",
+    resave: false,
+    saveUninitialized: true,
+    // store: mongoStore.create({ mongoUrl: MONGO_URI }),
+    cookie: cookieOption,
+  })
+);
+
+/** Static Files Setting */
 app.use(methodOverride());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());

@@ -3,77 +3,80 @@ const Customer = require("../models/customer");
 const mongoose = require("mongoose");
 const orderService = require("../services/order.service");
 
-// /** 주문 홈 */
-// module.exports.renderingOrderHome = async (req, res, next) => {
-//   // 추천 메뉴 로딩
-//   const recMenus = await Item.find({ category: { $in: ["recommend"] } }).limit(
-//     4
-//   );
-//   const path = req.path;
-
-//   // 세트 메뉴 판매순 로딩
-
-//   // 단품 메뉴 판매순 로딩
-
-//   // 사이드 판매순 로딩
-
-//   // 음료 판매순 로딩
-//   res.set({
-//     "content-type": "application/json",
-//     charset: "utf-8",
-//   });
-//   res.json({ recMenus, path });
-// };
-
-/** TODO: 메뉴 추천하기 */
-module.exports.renderingRecommendedMenu = async (req, res, next) => {};
-
 /** 추천메뉴 더보기 - 사장님 추천(머신러닝 추천 X) */
 module.exports.renderingAllRecommendedMenu = async (req, res, next) => {
-  const recMenus = await Item.find({}).limit(8);
+  const page = req.query.page ?? 1;
+  const maxPage = Math.ceil((await Item.count()) / 6) + 1;
+  const recMenus = await Item.find({})
+    .skip((page - 1) * 6)
+    .limit(6);
   const path = req.path;
 
   res.set({
     "content-type": "application/json",
     charset: "utf-8",
   });
-  res.json({ recMenus, path });
+  res.json({ recMenus, path, maxPage });
 };
 
 /** 세트 메뉴 추천하기(판매순) */
 module.exports.renderingSetMenu = async (req, res, next) => {
-  const recMenus = await Item.find({ category: { $in: ["set"] } });
   const path = req.path;
+  const page = req.query.page ?? 1;
+  const maxPage =
+    Math.ceil((await Item.find({ category: { $in: ["set"] } }).count()) / 6) +
+    1;
+  const recMenus = await Item.find({ category: { $in: ["set"] } })
+    .skip((page - 1) * 6)
+    .limit(6);
+
+  console.log(path, page, maxPage, req.query);
 
   res.set({
     "content-type": "application/json",
     charset: "utf-8",
   });
-  res.json({ recMenus, path });
+  res.json({ recMenus, path, maxPage });
 };
 
 /** 단품 메뉴 추천하기(판매순) */
 module.exports.renderingSingleMenu = async (req, res, next) => {
-  const recMenus = await Item.find({ category: { $in: ["single"] } });
+  const page = req.query.page ?? 1;
+  const maxPage =
+    Math.ceil(
+      (await Item.find({ category: { $in: ["single"] } }).count()) / 6
+    ) + 1;
+  const recMenus = await Item.find({ category: { $in: ["single"] } })
+    .skip((page - 1) * 6)
+    .limit(6);
   const path = req.path;
 
   res.set({
     "content-type": "application/json",
     charset: "utf-8",
   });
-  res.json({ recMenus, path });
+  res.json({ recMenus, path, maxPage });
 };
 
 /** 사이드(음료) 메뉴 추천하기(판매순) */
 module.exports.renderingSideMenu = async (req, res, next) => {
-  const recMenus = await Item.find({ category: { $in: ["side", "drink"] } });
+  const page = req.query.page ?? 1;
+  const maxPage =
+    Math.ceil(
+      (await Item.find({
+        category: { $in: ["side", "drink"] },
+      }).count()) / 6
+    ) + 1;
+  const recMenus = await Item.find({ category: { $in: ["side", "drink"] } })
+    .skip((page - 1) * 6)
+    .limit(6);
   const path = req.path;
 
   res.set({
     "content-type": "application/json",
     charset: "utf-8",
   });
-  res.json({ recMenus, path });
+  res.json({ recMenus, path, maxPage });
 };
 
 module.exports.getMenuDetail = async (req, res, next) => {
@@ -96,6 +99,8 @@ module.exports.getMenuDetail = async (req, res, next) => {
 /** 개인 얼굴 분석 후 메뉴 추천 */
 module.exports.recommendSingleMenu = async (req, res, next) => {
   const singleInfo = req.body["single_info"];
+  const page = req.query.page ?? 1;
+  console.log(singleInfo);
 
   const { population, ages } = singleInfo;
   let men = 0;
@@ -110,22 +115,32 @@ module.exports.recommendSingleMenu = async (req, res, next) => {
     }
   });
 
+  const maxPage = await orderService.getMaxPage(
+    population,
+    men,
+    women,
+    ages,
+    page
+  );
   const recMenus = await orderService.recommendMenu(
     population,
     men,
     women,
-    ages
+    ages,
+    page
   );
 
   res.set({
     "content-type": "application/json",
     charset: "utf-8",
   });
-  res.json({ recMenus, path });
+
+  res.json({ recMenus, path, maxPage, singleInfo: singleInfo ?? null });
 };
 
 /** 그룹 판단 후 메뉴 추천 */
 module.exports.recommendGroupMenu = async (req, res, next) => {
+  const page = req.query.page ?? 1;
   const customers = await Customer.find().sort({ createdAt: -1 });
   const { emb } = req.body;
   const path = req.path;
@@ -175,18 +190,27 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
     });
     const ages = Array.from(set);
 
+    const maxPage = await orderService.getMaxPage(
+      population,
+      men,
+      women,
+      ages,
+      page
+    );
     const recMenus = await orderService.recommendMenu(
       population,
       men,
       women,
-      ages
+      ages,
+      page
     );
 
     res.set({
       "content-type": "application/json",
       charset: "utf-8",
     });
-    res.json({ result: true, recMenus, path });
+
+    res.json({ recMenus, path, maxPage, singleInfo: singleInfo ?? null });
   }
 };
 
