@@ -12,9 +12,9 @@ module.exports.getMaxPage = async (
       Math.ceil(
         (await Item.find({
           serving: 1,
-          gender: men > women ? 0 : 1,
+          gender: { $in: [men > women ? 0 : 1, 2] },
           preferredAge: { $in: ages },
-          category: { $in: ["single"] },
+          // category: { $in: ["single"] },
         }).count()) / 6
       ) + 1
     );
@@ -57,7 +57,8 @@ module.exports.getMaxPage = async (
     return (
       Math.ceil(
         (await Item.find({
-          category: { $in: ["set"] },
+          serving: { $gte: 3 },
+          // category: { $in: ["set"] },
           preferredAge: { $in: ages },
         }).count()) / 6
       ) + 1
@@ -122,7 +123,7 @@ module.exports.recommendMenu = async (
     console.log("단체 메뉴 추천");
     return await Item.find({
       serving: { $gte: 3 },
-      category: { $in: ["set"] },
+      // category: { $in: ["set"] },
       preferredAge: { $in: ages },
     })
       .skip((page - 1) * 6)
