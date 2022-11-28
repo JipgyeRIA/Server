@@ -14,7 +14,7 @@ module.exports.getMaxPage = async (
           serving: 1,
           gender: { $in: [men > women ? 0 : 1, 2] },
           preferredAge: { $in: ages },
-          // category: { $in: ["single"] },
+          category: { $nin: ["side", "drink"] },
         }).count()) / 6
       ) + 1
     );
@@ -83,7 +83,7 @@ module.exports.recommendMenu = async (
       serving: 1,
       gender: { $in: [men > women ? 0 : 1, 2] },
       preferredAge: { $in: ages },
-      // category: { $in: ["single"] },
+      category: { $nin: ["side", "drink"] },
     })
       .skip((page - 1) * 6)
       .limit(6);

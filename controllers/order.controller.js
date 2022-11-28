@@ -100,7 +100,6 @@ module.exports.getMenuDetail = async (req, res, next) => {
 module.exports.recommendSingleMenu = async (req, res, next) => {
   const singleInfo = req.body["single_info"];
   const page = req.query.page ?? 1;
-  console.log(singleInfo);
 
   const { population, ages } = singleInfo;
   let men = 0;
@@ -135,7 +134,16 @@ module.exports.recommendSingleMenu = async (req, res, next) => {
     charset: "utf-8",
   });
 
-  res.json({ recMenus, path, maxPage, singleInfo: singleInfo ?? null });
+  res.json({
+    recMenus,
+    path,
+    maxPage,
+    singleInfo: singleInfo ?? null,
+    population,
+    men,
+    women,
+    ages,
+  });
 };
 
 /** 그룹 판단 후 메뉴 추천 */
@@ -151,9 +159,9 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
   for (let customer of customers) {
     const customerEmbeddingVector = strToEmbedding(customer.emb);
     const embeddingVector = strToEmbedding(emb);
-
     let normVal = l2Norm(customerEmbeddingVector, embeddingVector);
-    if (normVal > 0.3) {
+
+    if (normVal > 0.6) {
       continue;
     }
 
@@ -210,7 +218,16 @@ module.exports.recommendGroupMenu = async (req, res, next) => {
       charset: "utf-8",
     });
 
-    res.json({ recMenus, path, maxPage, singleInfo: singleInfo ?? null });
+    res.json({
+      result: true,
+      recMenus,
+      path,
+      maxPage,
+      population,
+      men,
+      women,
+      ages,
+    });
   }
 };
 
